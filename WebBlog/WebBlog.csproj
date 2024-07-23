@@ -18,4 +18,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PostManagement\Controllers\" />
+    <Folder Include="PostManagement\Models\" />
+    <Folder Include="PostManagement\Services\" />
+    <Folder Include="PostManagement\Repositories\" />
+    <Folder Include="WebSockets\Controllers\" />
+    <Folder Include="WebSockets\Models\" />
+    <Folder Include="WebSockets\Services\" />
+  </ItemGroup>
+
 </Project>
