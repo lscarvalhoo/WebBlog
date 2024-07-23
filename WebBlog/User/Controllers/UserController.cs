@@ -22,44 +22,33 @@ namespace WebBlog.Authentication.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel registerRequest)
+        public async Task<IActionResult> Register([FromBody] RegisterModel request)
         {
-            if (await _userService.UserExists(registerRequest.Username))
+            if (await _userService.UserExists(request.Username))
                 return BadRequest("Username already exists");
 
-            await _userService.RegisterUser(registerRequest.Username, registerRequest.Password);
+            await _userService.RegisterUser(request.Username, request.Password);
             return Ok("User registered successfully");
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel request)
         {
-            var user = await _userService.AuthenticateUser(model.Username, model.Password);
+            var user = await _userService.AuthenticateUser(request.Username, request.Password);
             if (user == null)
                 return Unauthorized();
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+            var claims = new[] { new Claim(ClaimTypes.Name, user.Id.ToString()) };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+            var tokenString = _userService.GenerateToken(claims);
 
             return Ok(new { Token = tokenString });
         }
 
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateModel model)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateModel request)
         {
-            var user = await _userService.UpdateUser(id, model.Username, model.Password);
+            var user = await _userService.UpdateUser(id, request.Username, request.Password);
             if (user == null)
                 return NotFound();
 
@@ -67,9 +56,9 @@ namespace WebBlog.Authentication.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int userId)
         {
-            var result = await _userService.DeleteUser(id);
+            var result = await _userService.DeleteUser(userId);
             if (!result)
                 return NotFound();
 

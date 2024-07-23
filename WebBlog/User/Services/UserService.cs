@@ -1,4 +1,9 @@
-﻿using WebBlog.Authentication.Repositories;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using WebBlog.Authentication.Repositories;
 using WebBlog.Utils;
 
 namespace WebBlog.Authentication.Services
@@ -6,10 +11,12 @@ namespace WebBlog.Authentication.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IConfiguration configuration)
         {
-            _userRepository = userRepository;
+            _userRepository = userRepository; 
+            _configuration = configuration;
         }
 
         public async Task<bool> UserExists(string username)
@@ -64,6 +71,21 @@ namespace WebBlog.Authentication.Services
 
             await _userRepository.DeleteUser(user);
             return true;
+        } 
+
+        public string GenerateToken(Claim[] claims)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         public async Task<User> AuthenticateUser(string username, string password)

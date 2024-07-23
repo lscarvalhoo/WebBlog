@@ -1,4 +1,6 @@
-﻿namespace WebBlog.Authentication.Services
+﻿using System.Security.Claims;
+
+namespace WebBlog.Authentication.Services
 {
     public interface IUserService
     {
@@ -7,5 +9,6 @@
         Task<User> UpdateUser(int id, string username, string password);
         Task<bool> DeleteUser(int id);
         Task<User> AuthenticateUser(string username, string password);
+        string GenerateToken(Claim[] claims);
     }
 }
