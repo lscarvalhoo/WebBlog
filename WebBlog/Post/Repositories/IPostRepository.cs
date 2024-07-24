@@ -1,5 +1,4 @@
-﻿using WebBlog.Post.DTO;
-using WebBlog.Post.Models;
+﻿using WebBlog.Post.Models;
 
 namespace WebBlog.Post.Repositories
 {

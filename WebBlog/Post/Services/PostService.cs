@@ -1,5 +1,4 @@
-﻿using WebBlog.Authentication.Repositories;
-using WebBlog.Post.DTO;
+﻿using WebBlog.Post.DTO;
 using WebBlog.Post.Models;
 using WebBlog.Post.Repositories;
 

@@ -12,14 +12,14 @@ namespace WebBlog.Post.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly IPostService _postService;
+        private readonly IPostService _postService; 
 
         public PostController(IPostService postService)
         {
             _postService = postService;
         }
 
-        [HttpGet("GetAllPosts")] 
+        [HttpGet("GetAll")] 
         public async Task<IActionResult> GetAllPosts()
         {
             var posts = await _postService.GetAll();
@@ -29,7 +29,7 @@ namespace WebBlog.Post.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("GetPostById/{id}")] 
+        [HttpGet("GetById/{id}")] 
         public async Task<IActionResult> GetPostById(Guid id)
         {
             var post = await _postService.GetById(id);
