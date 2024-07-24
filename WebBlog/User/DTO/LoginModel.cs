@@ -1,6 +1,6 @@
-﻿namespace WebBlog.Authentication.Models
+﻿namespace WebBlog.Authentication.DTO
 {
-    public class UpdateModel
+    public class LoginModel
     {
         public string Username { get; set; }
         public string Password { get; set; }

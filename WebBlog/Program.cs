@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebBlog.Authentication.Repositories;
 using WebBlog.Authentication.Services;
+using WebBlog.Post.Repositories;
+using WebBlog.Post.Services;
 
 var builder = WebApplication.CreateBuilder(args); 
 
@@ -13,6 +15,8 @@ builder.Services.AddDbContext<DatabaseConfig>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(options =>

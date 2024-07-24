@@ -19,12 +19,12 @@ namespace WebBlog.Authentication.Services
             _configuration = configuration;
         }
 
-        public async Task<bool> UserExists(string username)
+        public async Task<bool> Exists(string username)
         {
-            return await _userRepository.UserExists(username);
+            return await _userRepository.Exists(username);
         }
 
-        public async Task<User> RegisterUser(string username, string password)
+        public async Task<User> Register(string username, string password)
         {
             byte[] passwordHash, passwordSalt;
             PasswordHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
@@ -38,39 +38,6 @@ namespace WebBlog.Authentication.Services
 
             await _userRepository.AddUser(user);
             return user;
-        }
-
-        public async Task<User> UpdateUser(int id, string username, string password)
-        {
-            var user = await _userRepository.GetUserById(id);
-            if (user == null)
-                return null;
-
-            if (!string.IsNullOrWhiteSpace(password))
-            {
-                byte[] passwordHash, passwordSalt;
-                PasswordHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
-                user.PasswordHash = Convert.ToBase64String(passwordHash);
-                user.PasswordSalt = Convert.ToBase64String(passwordSalt);
-            }
-
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                user.Username = username;
-            }
-
-            await _userRepository.UpdateUser(user);
-            return user;
-        }
-
-        public async Task<bool> DeleteUser(int id)
-        {
-            var user = await _userRepository.GetUserById(id);
-            if (user == null)
-                return false;
-
-            await _userRepository.DeleteUser(user);
-            return true;
         } 
 
         public string GenerateToken(Claim[] claims)
@@ -80,7 +47,7 @@ namespace WebBlog.Authentication.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -88,9 +55,9 @@ namespace WebBlog.Authentication.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public async Task<User> AuthenticateUser(string username, string password)
+        public async Task<User> Authenticate(string username, string password)
         {
-            var user = await _userRepository.GetUserByUsername(username);
+            var user = await _userRepository.GetByUsername(username);
             if (user == null)
                 return null;
 

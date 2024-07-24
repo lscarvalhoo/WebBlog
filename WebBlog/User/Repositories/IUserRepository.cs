@@ -2,11 +2,8 @@
 {
     public interface IUserRepository
     {
-        Task<bool> UserExists(string username);
-        Task<User> GetUserByUsername(string username);
-        Task<User> GetUserById(int id);
-        Task AddUser(User user);
-        Task UpdateUser(User user);
-        Task DeleteUser(User user);
+        Task<bool> Exists(string username);
+        Task<User> GetByUsername(string username); 
+        Task AddUser(User user); 
     }
 }
