@@ -1,16 +1,21 @@
-﻿using WebBlog.Post.DTO;
+﻿using Microsoft.AspNetCore.SignalR;
+using WebBlog.Post.DTO;
 using WebBlog.Post.Models;
 using WebBlog.Post.Repositories;
+using WebBlog.WebSocket.Hubs;
 
 namespace WebBlog.Post.Services
 {
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository; 
+        private readonly IHubContext<PostHub> _hubContext;
 
-        public PostService(IPostRepository postRepository)
+        public PostService(IPostRepository postRepository,
+                           IHubContext<PostHub> hubContext)
         {
-            _postRepository = postRepository; 
+            _postRepository = postRepository;
+            _hubContext = hubContext;
         }
 
         public async Task<PostDTO> GetById(Guid id)
@@ -30,6 +35,7 @@ namespace WebBlog.Post.Services
         public async Task Add(UserPost post)
         {
             await _postRepository.Add(post);
+            await _hubContext.Clients.All.SendAsync("ReceivePostNotification", $"New post: {post.Title}"); 
         }
 
         public async Task<IEnumerable<PostDTO>> GetAll()
