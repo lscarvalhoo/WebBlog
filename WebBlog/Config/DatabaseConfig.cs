@@ -11,6 +11,8 @@ public class DatabaseConfig : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<User>()
             .Property(e => e.Id)
             .HasDefaultValueSql("NEWID()");

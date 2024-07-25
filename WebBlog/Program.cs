@@ -9,7 +9,7 @@ using WebBlog.Post.Repositories;
 using WebBlog.Post.Services;
 using WebBlog.WebSocket.Hubs;
 
-var builder = WebApplication.CreateBuilder(args); 
+var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddDbContext<DatabaseConfig>(options =>
@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5500") // Adicione a URL do cliente aqui
+            builder.WithOrigins("http://localhost:5500") 
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials();
@@ -86,7 +86,13 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<DatabaseConfig>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
+var app = builder.Build(); 
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseConfig>();
+    dbContext.Database.Migrate();
+}
 
 app.UseHttpsRedirection();
 
